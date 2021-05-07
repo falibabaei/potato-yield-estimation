@@ -1,11 +1,4 @@
 
-# -*- coding: utf-8 -*-
-"""
-Created on Tue Nov 24 11:21:38 2020
-
-@author: Fahimeh
-"""
-
 import pandas as pd
 from sklearn.preprocessing import StandardScaler,MinMaxScaler
 from sklearn.model_selection import train_test_split
@@ -39,7 +32,7 @@ Batch_size=64
 Epoch=500
 NAME = "yeild_estimation_fadagosa.h5" 
 
-dataset='potato_2010_2010_fadagosa.csv'
+dataset='C:/Users/Saeid/PycharmProjects/pythonProject/Data/Fadagosa_2010_2020/potato_2010_2010_fadagosa.csv'
 df=pd.read_csv(dataset)
 #df.dropna(inplace=True)
 
@@ -47,28 +40,18 @@ df.set_index('date', inplace=True)
 #df.drop(['stage'],axis=1,inplace=True)
 df.columns 
 df.dropna(inplace=True)
-df.drop(['Tmin','Tmax', 'Humidity_min',  'Humidity_max','Solar R_Avg','YieldPart_DSSAT','Stage'],axis=1 ,inplace=True)
+df.drop(['Tmin','Tmax', 'Humidity_min',  'Humidity_max','Solar R_Avg','Stage'],axis=1 ,inplace=True)
 df.dropna(inplace=True)
 
 
-def data_preprocessing(X_train,y_train):
-    min_max_scaler = MinMaxScaler()
-    X_train_reshape=np.reshape(X_train,(X_train.shape[0],X_train.shape[1]*X_train.shape[2]))
-    y_train_reshape=y_train.reshape(-1, 1)
-    data=np.concatenate((X_train_reshape,y_train_reshape),axis=1)
-    data_minmax = min_max_scaler.fit_transform(data)
-    X_train_minmax=data_minmax[:,:-1]
-    Y_train_minmax=data_minmax[:,-1]
-    X_train_minmax_reshape=X_train_minmax.reshape((X_train.shape[0],X_train.shape[1],X_train.shape[2]))
-    return X_train_minmax_reshape, Y_train_minmax,min_max_scaler
-  #  values=df.values
-    #scaler=StandardScaler()
-   # scaler=MinMaxScaler()
-    #values_normal=scaler.fit_transform(values)
+def data_preprocessing(df):
+        values=df.values
+        scaler=MinMaxScaler()
+        values_normal=scaler.fit_transform(values)
   
-    #df=pd.DataFrame(values_normal, columns= df.columns, index=df.index)
+        df=pd.DataFrame(values_normal, columns= df.columns, index=df.index)
     
-    #return df, scaler
+        return df, scaler
 
 
 
@@ -156,7 +139,7 @@ checkpoint=tf.keras.callbacks.ModelCheckpoint(NAME, monitor="val_loss", mode='mi
 
 
 
-history=model.fit(X_train,Y_train,batch_size=Batch_size,
+history=model.fit(X_train,y_train,batch_size=Batch_size,
                          epochs=Epoch, 
                          validation_split=0.1,
                          verbose=2,
@@ -197,4 +180,3 @@ print(f'R_square={r}')
 
 
 print((mean_squared_error(inv_y,inv_yhat)))
-
